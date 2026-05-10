@@ -5,8 +5,9 @@ import { DataSource } from 'typeorm';
 import { Order, OrderStatus } from '../order/entities/order.entity';
 import { OrderItem } from '../order/entities/order-item.entity';
 import { Product } from '../product/entities/product.entity';
+import { QUEUE_NAMES } from '../common/queue.common';
 
-@Processor('order-expiration')
+@Processor(QUEUE_NAMES.ORDER_EXPIRATION)
 export class OrderExpirationProcessor {
     constructor(private dataSource: DataSource) { }
 

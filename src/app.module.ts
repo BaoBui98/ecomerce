@@ -11,20 +11,14 @@ import { OrderModule } from './order/order.module';
 import { BullModule } from '@nestjs/bull';
 import { PaymentModule } from './payment/payment.module';
 
+import { bullRootConfig } from './config/bulk.config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port: Number(process.env.REDIS_PORT) || 6379,
-      },
-    }),
-    BullModule.registerQueue({
-      name: 'order-expiration', //Ten queue để import vào service
-    }),
+    BullModule.forRootAsync(bullRootConfig),
     TypeOrmModule.forRootAsync(typeOrmConfig),
     AuthModule,
     UserModule,

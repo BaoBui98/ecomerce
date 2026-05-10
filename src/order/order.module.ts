@@ -9,12 +9,14 @@ import { AuthModule } from '../auth/auth.module';
 import { BullModule } from '@nestjs/bull';
 import { OrderExpirationProcessor } from 'src/processor/order-expiration.processor';
 
+import { QUEUE_NAMES } from '../common/queue.common';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderItem, Product]),
     AuthModule,
     BullModule.registerQueue({
-      name: 'order-expiration', //Tên queue để import vào service
+      name: QUEUE_NAMES.ORDER_EXPIRATION,
     }),
   ],
   controllers: [OrderController],

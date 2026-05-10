@@ -8,6 +8,7 @@ import { Product } from '../product/entities/product.entity';
 import type { Queue } from 'bull';
 
 import { InjectQueue } from '@nestjs/bull';
+import { QUEUE_NAMES } from '../common/queue.common';
 
 @Injectable()
 export class OrderService {
@@ -15,7 +16,7 @@ export class OrderService {
     private readonly dataSource: DataSource,
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
-    @InjectQueue('order-expiration') private orderExpirationQueue: Queue,
+    @InjectQueue(QUEUE_NAMES.ORDER_EXPIRATION) private orderExpirationQueue: Queue,
   ) { }
 
   /**
