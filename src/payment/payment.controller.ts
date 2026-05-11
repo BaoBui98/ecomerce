@@ -1,34 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Headers } from '@nestjs/common';
+import type { RawBodyRequest } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { AuthGuard } from '../guard/auth.guard';
+import type { RequestWithUser } from '../interface/request.interface';
+import type { Request } from 'express';
 
+@ApiTags('Payment')
 @Controller('payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) {}
+  constructor(private readonly paymentService: PaymentService) { }
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
-    return this.paymentService.create(createPaymentDto);
+  @Post('checkout')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Tạo checkout session cho thanh toán Stripe' })
+  @ApiResponse({ status: 201, description: 'Tạo thành công link thanh toán.' })
+  async createCheckout(
+    @Req() req: RequestWithUser,
+    @Body() createPaymentDto: CreatePaymentDto,
+  ) {
+    return this.paymentService.createCheckoutSession(req.user.id, createPaymentDto);
   }
 
-  @Get()
-  findAll() {
-    return this.paymentService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentService.remove(+id);
+  @Post('webhook')
+  @ApiOperation({ summary: 'Webhook từ Stripe báo về kết quả thanh toán' })
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Headers('stripe-signature') signature: string,
+  ) {
+    // Ở đây req.rawBody đã được cấu hình enable ở main.ts
+    return this.paymentService.handleWebhook(req.rawBody || Buffer.from(''), signature);
   }
 }

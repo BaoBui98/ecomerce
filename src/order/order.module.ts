@@ -7,7 +7,7 @@ import { OrderItem } from './entities/order-item.entity';
 import { Product } from '../product/entities/product.entity';
 import { AuthModule } from '../auth/auth.module';
 import { BullModule } from '@nestjs/bull';
-import { OrderExpirationProcessor } from 'src/processor/order-expiration.processor';
+import { OrderExpirationProcessor } from '../processor/order-expiration.processor';
 
 import { QUEUE_NAMES } from '../common/queue.common';
 
@@ -21,5 +21,6 @@ import { QUEUE_NAMES } from '../common/queue.common';
   ],
   controllers: [OrderController],
   providers: [OrderService, OrderExpirationProcessor],
+  exports: [OrderService],
 })
 export class OrderModule { }

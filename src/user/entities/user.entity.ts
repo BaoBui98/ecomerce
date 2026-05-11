@@ -26,6 +26,9 @@ export class User {
   })
   role: UserRole;
 
+  @Column({ default: 0 })
+  coin: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
