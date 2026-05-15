@@ -24,6 +24,41 @@ services:
     volumes:
       - redis_data:/data
 
+  kong:
+    image: kong:3.6
+    container_name: kong_gateway
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_USER: admin
+      KONG_PG_PASSWORD: admin123
+      KONG_PG_DATABASE: app_db
+
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+
+      # Admin API
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+
+      # 🔥 Kong Manager UI (official)
+      KONG_ADMIN_GUI_LISTEN: 0.0.0.0:8002
+
+    ports:
+      - "8000:8000"   # proxy
+      - "8001:8001"   # admin API
+      - "8002:8002"   # manager UI
+
+    command: >
+      bash -c "
+      kong migrations bootstrap &&
+      kong start
+      "
+
 volumes:
   postgres_data:
   redis_data:
