@@ -18,12 +18,18 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
+# Set NODE_ENV to production
+ENV NODE_ENV=production
+
 # Copy package files and install only production dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci --only=production && npm cache clean --force
 
 # Copy built artifacts from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 
+# Run as non-root user for security
+USER node
+
 # Start the application
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
