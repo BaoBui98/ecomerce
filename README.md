@@ -58,7 +58,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_SUCCESS_URL=https://yourdomain.com/payment/success
 STRIPE_CANCEL_URL=https://yourdomain.com/payment/cancel
 
-docker-compose -f docker-compose.prod.yml up -d --build
+DOCKER_BUILDKIT=0 docker-compose -f docker-compose.prod.yml up -d --build
 
 # Truy cập vào container của backend
 docker exec -it ecommerce_backend_prod sh
@@ -68,5 +68,21 @@ npm run migration:run:prod
 
 # Thoát khỏi container
 exit
+
+
+# 1. Tạo một file Swap dung lượng 2GB (2048 MB)
+sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+
+# 2. Cấp quyền bảo mật đúng chuẩn cho file vừa tạo
+sudo chmod 600 /swapfile
+
+# 3. Định dạng file đó thành định dạng phân vùng Swap
+sudo mkswap /swapfile
+
+# 4. Kích hoạt RAM ảo
+sudo swapon /swapfile
+
+# 5. Kiểm tra xem RAM ảo đã được nhận chưa (bạn sẽ thấy dòng swap có số liệu)
+free -m
 
 
