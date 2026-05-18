@@ -22,6 +22,7 @@
     "migration:create": "npm run typeorm -- migration:create",
     "migration:generate": "npm run typeorm -- migration:generate -d src/db/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/db/data-source.ts",
+    "migration:run:prod": "npx typeorm migration:run -d dist/db/data-source.js",
     "migration:revert": "npm run typeorm -- migration:revert -d src/db/data-source.ts",
     "seed:admin": "ts-node src/seed/admin.seed.ts"
   },
